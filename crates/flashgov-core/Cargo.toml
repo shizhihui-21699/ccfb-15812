@@ -1,0 +1,14 @@
+[package]
+name = "flashgov-core"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+description = "Platform-free accounting, wear model and policy engine for the flash write governor"
+
+[dependencies]
+# Deliberately tiny: the core must stay testable on a laptop and portable to
+# whatever kernel the head unit ships. Only serde (for snapshots) is allowed.
+serde.workspace = true
+
+[dev-dependencies]
+serde_json.workspace = true

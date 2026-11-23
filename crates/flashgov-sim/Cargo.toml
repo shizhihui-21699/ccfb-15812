@@ -1,0 +1,14 @@
+[package]
+name = "flashgov-sim"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+description = "Deterministic year-scale simulator and regression harness for the flash governor"
+
+[[bin]]
+name = "flashgov-sim"
+path = "src/main.rs"
+
+[dependencies]
+flashgov-core = { workspace = true }
+serde_json = { workspace = true }

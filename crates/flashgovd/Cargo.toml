@@ -1,0 +1,16 @@
+[package]
+name = "flashgovd"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+description = "Resident flash write governor for Linux-based head units"
+
+[[bin]]
+name = "flashgovd"
+path = "src/main.rs"
+
+[dependencies]
+flashgov-core = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+libc = { workspace = true }

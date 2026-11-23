@@ -1,0 +1,72 @@
+{
+  "version": 1,
+  "device": {
+    "target_tbw_gib": 3000,
+    "service_years": 8.0
+  },
+  "policy": {
+    "stages": { "amber": 600, "orange": 800, "red": 900, "hysteresis": 30 },
+    "critical_reserve_pct": 15,
+    "burst_tau_secs": 60,
+    "floor_bps": 16384,
+    "min_normal_bpd": 1048576,
+    "freeze_untrusted_at_red": false,
+    "maintenance_window": {
+      "enabled": true,
+      "start_hour": 1,
+      "end_hour": 5,
+      "multiplier": 6
+    },
+    "tick_ms": 15000,
+    "wear_sample_secs": 900,
+    "persist_secs": 600
+  },
+  "apps": {
+    "com.oem.nav": {
+      "package": "com.oem.nav",
+      "cgroup": "/apps/nav",
+      "class": "essential",
+      "quota_bpd": 341835776,
+      "burst_bytes": 3512729600,
+      "label": "Navigation"
+    },
+    "com.oem.dashcam": {
+      "package": "com.oem.dashcam",
+      "cgroup": "/apps/dashcam",
+      "class": "essential",
+      "quota_bpd": 241591910,
+      "burst_bytes": 362397696,
+      "label": "Dashcam"
+    },
+    "com.oem.ota": {
+      "package": "com.oem.ota",
+      "cgroup": "/apps/ota",
+      "class": "essential",
+      "quota_bpd": 51539610,
+      "burst_bytes": 6442450944,
+      "label": "OTA updater"
+    },
+    "com.oem.browser": {
+      "package": "com.oem.browser",
+      "cgroup": "/apps/browser",
+      "class": "normal",
+      "quota_bpd": 41943040,
+      "label": "Browser"
+    },
+    "com.oem.cluster": {
+      "package": "com.oem.cluster",
+      "cgroup": "/apps/cluster",
+      "class": "critical",
+      "quota_bpd": 8388608,
+      "safety_of_life": true,
+      "label": "Instrument cluster"
+    }
+  },
+  "mediators": {
+    "downloads": {
+      "cgroup": "/system/downloads",
+      "quota_bpd": 2147483648,
+      "single_tenant": false
+    }
+  }
+}
