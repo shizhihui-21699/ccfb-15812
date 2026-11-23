@@ -476,7 +476,34 @@ impl Governor {
         // Never exceed the datasheet-derived plan: measured wear can look
         // better than reality early on because the occasional bucket step is
         // coarse.
-        measured.min(self.cfg.nominal_ceiling_bpd())
+        let ceiling = measured.min(self.cfg.nominal_ceiling_bpd());
+        // A ceiling of zero would starve *every* app, including the reversing
+        // camera, which is precisely the failure this whole system exists to
+        // prevent.  At the very end of life the arithmetic can round to zero;
+        // clamp up to a floor that is guaranteed to cover the critical apps.
+        // "The flash is about to die" must never mean "the car cannot reverse".
+        ceiling.max(self.ceiling_floor_bpd())
+    }
+
+    /// Absolute minimum whole-system ceiling (bytes/day), sized to keep every
+    /// critical app writing normally even at 100 % wear.
+    ///
+    /// This is a deliberate policy floor, not a measurement: the device may be
+    /// beyond its rated endurance, but the car is still being driven.  We keep
+    /// enough headroom to fund all critical apps *plus* the configured reserve,
+    /// so the stage ladder never starves the cluster or the reversing camera.
+    fn ceiling_floor_bpd(&self) -> u64 {
+        let critical: u64 = self
+            .apps
+            .iter()
+            .filter(|a| a.class == Class::Critical)
+            .map(|a| a.base.quota_bpd)
+            .sum();
+        let reserve_pct = self.cfg.policy.critical_reserve_pct.max(1);
+        // ceiling must be >= critical / (reserve fraction), so the reserve can
+        // hold them; guard the division and keep a sane absolute minimum.
+        let needed = mul_div(critical.max(4 << 20), 100, reserve_pct);
+        needed.max(4 << 20)
     }
 
     /// Part of the ceiling held back for critical functions.

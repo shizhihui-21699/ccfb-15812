@@ -1,0 +1,32 @@
+[Unit]
+Description=Flash write governor for the head unit eMMC
+Documentation=file:///usr/share/doc/flashgov/DESIGN.md
+# The governor must start before user apps so their caps are in place from the
+# first write. It needs the cgroup hierarchy, hence after the cgroup mount.
+After=systemd-remount-fs.service
+Wants=systemd-remount-fs.service
+Before=multi-user.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/flashgovd --config /etc/flashgov.json
+# The io controller is per-cgroup; rotating the state image needs write access
+# to the state dir only.
+StateDirectory=flashgov
+RuntimeDirectory=flashgov
+# CAP_SYS_RAWIO is needed only for the MMC ioctl EXT_CSD read. If the kernel
+# exports /sys/block/*/device/life_time, drop this line and run unprivileged.
+AmbientCapabilities=CAP_SYS_RAWIO
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+# Restart on failure, but never thrash: a config error will exit EXIT_CONFIG
+# and systemd's start limit stops the loop.
+Restart=on-failure
+RestartSec=5s
+StartLimitIntervalSec=300
+StartLimitBurst=5
+
+[Install]
+WantedBy=multi-user.target

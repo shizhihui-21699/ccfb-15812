@@ -577,9 +577,6 @@ fn read_device_write_bytes(root: &std::path::Path) -> Option<u64> {
         let Ok(rd) = std::fs::read_dir(&dir) else {
             continue;
         };
-        if let Ok(st) = Cgroup::new(root, "").read_stat() {
-            let _ = st;
-        }
         let stat = std::fs::read_to_string(dir.join("io.stat")).unwrap_or_default();
         let s: IoStat = backend::cgroup::parse_io_stat(&stat);
         total = total.saturating_add(s.wbytes);
