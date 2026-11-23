@@ -159,7 +159,7 @@ deploy/flashgovd.service
 ## Testing
 
 ```sh
-cargo test                       # 51 core + 23 daemon unit tests
+cargo test                       # 55 core (incl. integration) + 23 daemon tests
 cargo clippy --all-targets       # clean
 cargo clippy --target x86_64-unknown-linux-gnu -p flashgovd   # the real code paths
 ```
